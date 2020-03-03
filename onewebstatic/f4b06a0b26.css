@@ -1,0 +1,7 @@
+
+        @media (max-width: 650px) { body { min-width: 'initial' } body.desktopV { min-width: 1000px } }
+        @media (min-width: 651px) { body { min-width: 1000px } body.mobileV { min-width: initial } }
+                        .bodyBackground {
+                            
+background-image:none;
+                        }

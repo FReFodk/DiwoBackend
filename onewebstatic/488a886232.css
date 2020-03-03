@@ -1,0 +1,12 @@
+.mobileV div[data-id='2687B58F-32E1-435F-B43C-CF13509E908F'] > div:first-child {border-bottom-width: 1px !important;
+}
+.mobileV div[data-id='BE972390-C5A4-4A67-9EDF-ABB415563692'] > div:first-child {border-bottom-width: 1px !important;
+}
+.mobileV div[data-id='C581E9A5-E612-42E5-B840-2728AB33E2C2'] > div:first-child {border-top-width: 1px !important;
+}
+        @media (max-width: 650px) { body { min-width: 'initial' } body.desktopV { min-width: 1000px } }
+        @media (min-width: 651px) { body { min-width: 1000px } body.mobileV { min-width: initial } }
+                        .bodyBackground {
+                            
+background-image:none;
+                        }

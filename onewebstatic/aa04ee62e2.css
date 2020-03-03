@@ -1,0 +1,9 @@
+.onecom-webshop-main {font-family: Arimo;}.onecom-webshop-main,.onecom-webshop-main a.link, .onecom-webshop-main a.link:link,.onecom-webshop-main a.link:visited, .onecom-webshop-main a.link:hover,.onecom-webshop-main a.link:active, .onecom-webshop-main input,.onecom-webshop-main select, .onecom-webshop-main .text-color {color: rgba(33,32,34,1);}.onecom-webshop-main .text-color svg {fill: rgba(33,32,34,1);}.onecom-webshop-main .bg-light-focus:hover {color: rgba(255,255,255,1) !important;background-color: rgba(0,151,206,0.5) !important}.onecom-webshop-main .border-fcolor, .onecom-webshop-main .border-light-color {border-color: rgba(33,32,34,1) !important;}.onecom-webshop-main .border-light-font-color {border-color: rgba(33,32,34,0.5) !important;}.onecom-webshop-main .focus, .onecom-webshop-main .mobile-slider a {color: rgba(0,151,206,1) !important;}.onecom-webshop-main .focus svg {fill: rgba(0,151,206,1) !important;}.onecom-webshop-main .bg-extra-light-focus:hover {background-color: rgba(0,151,206,0.1) !important;}.onecom-webshop-main .bg-extra-light-focus {border-color: rgba(33,32,34,0.2) !important;}.onecom-webshop-main .overlay-container:hover .overlay {background-color: rgba(255,255,255,0.2) !important;}.onecom-webshop-main .product-label {background-color: rgba(0,151,206,1) !important;color: rgba(255,255,255,1) !important;}
+.mobileV div[data-id='C581E9A5-E612-42E5-B840-2728AB33E2C2'] > div:first-child {border-top-width: 1px !important;
+}
+        @media (max-width: 650px) { body { min-width: 'initial' } body.desktopV { min-width: 1000px } }
+        @media (min-width: 651px) { body { min-width: 1000px } body.mobileV { min-width: initial } }
+                        .bodyBackground {
+                            
+background-image:none;
+                        }
