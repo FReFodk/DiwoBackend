@@ -335,4 +335,26 @@ class MassageController extends Controller
                 ],201);
         }
    }
+   public function delete_notification_data(Request $request)
+   {
+      try
+      {
+        $data = Push_notification::where("udid",$request->get("udid"))->get();
+        if(count($data))
+        {
+            Push_notification::destroy($data[0]->id);
+            return response()->json([
+                    'status' => 'success',
+                    'message' => 'Delete success'
+                ],201);
+        }
+      }
+      catch(\Exception $e)
+        {
+            return response()->json([
+                    'status' => 'fail',
+                    'message' => $e->getMessage()
+                ],201);
+        }
+   }
 }
