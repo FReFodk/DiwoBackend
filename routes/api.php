@@ -52,5 +52,6 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::post('getLastMessageReadStatus','MassageController@getLastMessageReadStatus');
     Route::post('edit_notification','MassageController@edit_notification_data');
     Route::post('delete_notification','MassageController@delete_notification_data');
+    Route::get('edit_badge','MassageController@update_badge_data');
 });
     Route::post('add_notification','MassageController@add_notification_data');

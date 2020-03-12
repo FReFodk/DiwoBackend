@@ -15,13 +15,13 @@ class MassageController extends Controller
 {
    public function getUserMessages()
    {
-   	 	$user = JWTAuth::user();
+      $user = JWTAuth::user();
         $user_id = $user->user_id;
         $messages = Messages::where(['sender_id'=>$user_id])->orWhere(['receiver_id'=>$user_id])->latest()->get();
         $messages_array = [];
         $old_message_count  = 0;
         if(!empty($messages)){
-        	$old_message_count = $messages->count();
+          $old_message_count = $messages->count();
           foreach($messages as $msg){
            // print_r($msg->receiver->first_name);
             $m = $msg;
@@ -52,36 +52,39 @@ class MassageController extends Controller
    }
    public function getLastMessageReadStatus()
    {
-   	 	$user = JWTAuth::user();
+      $user = JWTAuth::user();
         $user_id = $user->user_id;
         $last_messages = Messages::where(['receiver_id'=>$user_id])->where('is_read','=',0)->latest()->get();
+
+
         $read_status = false;
         $unread_messages  = [];
         if(!empty($last_messages)){
-        	foreach($last_messages as $message){
-        		$message->read_status = false;
-	        	if($message->is_read == 1){
-		        	$message->read_status = true;
-		        }
-		        $unread_messages[] =$message;
-		    }
+          foreach($last_messages as $message){
+            $message->read_status = false;
+            if($message->is_read == 1){
+              $message->read_status = true;
+            }
+            $unread_messages[] =$message;
+        }
         }
         $status = 200;
-        return response()->json(compact('unread_messages','status'));
+        $length = count($last_messages);
+        return response()->json(compact('unread_messages','status','length'));
     }
    public function checkForNewMessages(Request $request)
    {
-   		$old_message_count = $request->old_message_count;
-   		$user = JWTAuth::user();
+      $old_message_count = $request->old_message_count;
+      $user = JWTAuth::user();
         $user_id = $user->user_id;
         $messages_count = Messages::where(['sender_id'=>$user_id])->orWhere(['receiver_id'=>$user_id])->latest()->count();
         if($messages_count != $old_message_count){
-        	$msg = "New messages found.";
-        	$new_message_count = $messages_count;
+          $msg = "New messages found.";
+          $new_message_count = $messages_count;
         }
         else{
-        	$msg = "No any new messages found.";
-        	$new_message_count = $old_message_count;
+          $msg = "No any new messages found.";
+          $new_message_count = $old_message_count;
         }
         $status = 200;
         return response()->json(compact('msg','new_message_count','status'));
@@ -121,12 +124,13 @@ class MassageController extends Controller
    }
    public function sendMessage(Request $request)
    {
-    	$user = JWTAuth::parseToken()->authenticate();
+    
+      $user = JWTAuth::parseToken()->authenticate();
         $user_id = $user->user_id;
         $validator = Validator::make($request->all(), [
-        	'receiver_id' => 'required',
-        	'title' => 'required',
-        	'message' => 'required'
+          'receiver_id' => 'required',
+          'title' => 'required',
+          'message' => 'required'
         ]);
 
         if($validator->fails()){
@@ -141,43 +145,48 @@ class MassageController extends Controller
         }
         if(is_array($receivers) && !empty($receivers)) 
         {
-        	$url = "https://fcm.googleapis.com/fcm/send";
-	        $serverKey = "AAAAljSRhps:APA91bFYcSmOKbiQb8y7exkfjdxanHqNneyFWwQylkz0yg3CPwvEeOmfT1ObragkA2_aCcgrCftWKSYUzofeah3CkIzVEi2jbPwm8324D61OrxA_HlS1VIwQGWPZGdSyne2PNOOXTgO9";
-	        $push_data = Push_notification::whereIn("user_id",$receivers)->get();
-          	$push_id = $push_data->pluck("push_id")->toArray();
-          	if(count($push_id))
-          	{
-	          	$token = $push_id;
-	          	$title = $request->get('title');
-		        $body = $request->get('message');
-		        $notification = array('title' =>$title , 'body' => $body,'content_available' => true,'sound' => 'default','priority' => 'high');
-		        $data = array('title' =>$title , 'body' => $body,'content_available' => true,'sound' => 'default','priority' => 'high');
-		        $arrayToSend = array('registration_ids' => $token, 'notification' => $notification,'data' => $data);
-		        $json = json_encode($arrayToSend);$headers = array();
-		        $headers[] = 'Content-Type: application/json';
-		        $headers[] = 'Authorization: key='. $serverKey;
-		        $ch = curl_init();
-		        curl_setopt($ch, CURLOPT_URL, $url);
-		        curl_setopt($ch, CURLOPT_CUSTOMREQUEST,"POST");
-		        curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
-		        curl_setopt($ch, CURLOPT_HTTPHEADER,$headers);
-		        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-		        $response = curl_exec($ch);
-		        if ($response === FALSE) 
-		        {
-		        	die('FCM Send Error: ' . curl_error($ch));
-		        }
-		    }
-          foreach($receivers as $receiver_id){
+          $url = "https://fcm.googleapis.com/fcm/send";
+          $serverKey = "AAAAljSRhps:APA91bFYcSmOKbiQb8y7exkfjdxanHqNneyFWwQylkz0yg3CPwvEeOmfT1ObragkA2_aCcgrCftWKSYUzofeah3CkIzVEi2jbPwm8324D61OrxA_HlS1VIwQGWPZGdSyne2PNOOXTgO9";
+          
+            if(count($receivers))
+            {
+              foreach($receivers as $receiver_id){
 
-            $insert = Messages::create([
-                'sender_id' => $user_id,
-                'receiver_id' => $receiver_id,
-               	'title' => $request->get('title'),
-            	'message' => $request->get('message')
-            ]);
-            $receivers_data[] = $insert;
+                $insert = Messages::create([
+                    'sender_id' => $user_id,
+                    'receiver_id' => $receiver_id,
+                    'title' => $request->get('title'),
+                  'message' => $request->get('message')
+                ]);
+                $receivers_data[] = $insert;
+              }
+              foreach ($receivers as $key => $value) 
+              {
+                $push_data = Push_notification::where("user_id",$value)->get();
+                $push_id = $push_data->pluck("push_id")->toArray();
+                $user_badge = DB::table('messages')->where("receiver_id",$value)->where('is_read','0')->count();
+                $token = $push_id;
+                $title = $request->get('title');
+              $body = $request->get('message');
+              $notification = array('title' =>$title , 'body' => $body,'content_available' => true,'sound' => 'default','priority' => 'high','badge' =>$user_badge);
+              $data = array('title' =>$title , 'body' => $body,'content_available' => true,'sound' => 'default','priority' => 'high','badge' => $user_badge);
+              $arrayToSend = array('registration_ids' => $token, 'notification' => $notification,'data' => $data);
+              $json = json_encode($arrayToSend);$headers = array();
+              $headers[] = 'Content-Type: application/json';
+              $headers[] = 'Authorization: key='. $serverKey;
+              $ch = curl_init();
+              curl_setopt($ch, CURLOPT_URL, $url);
+              curl_setopt($ch, CURLOPT_CUSTOMREQUEST,"POST");
+              curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
+              curl_setopt($ch, CURLOPT_HTTPHEADER,$headers);
+              curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+              $response = curl_exec($ch);
+              if ($response === FALSE) 
+              {
+              }
           }
+        }
+          
         }
 
         $message_data = Messages::where(['sender_id'=>$user_id])->get();
@@ -186,10 +195,10 @@ class MassageController extends Controller
         return response()->json(compact('receivers_data','status'));
    }
    public function deleteSingleUserMessage(Request $request){
-   		$user = JWTAuth::parseToken()->authenticate();
+      $user = JWTAuth::parseToken()->authenticate();
         $user_id = $user->user_id;
         $validator = Validator::make($request->all(), [
-        	'message_id' => 'required',
+          'message_id' => 'required',
         ]);
 
         if($validator->fails()){
@@ -197,24 +206,24 @@ class MassageController extends Controller
         }
         $message_id = $request->message_id;
         $message = Messages::where(['id'=>$message_id])->where(function ($query) use ($user_id){
-					    $query->where('sender_id', '=', $user_id)
-					          ->orWhere('receiver_id', '=', $user_id);
-					})->first();
+              $query->where('sender_id', '=', $user_id)
+                    ->orWhere('receiver_id', '=', $user_id);
+          })->first();
         if(!empty($message)){
-        	$message->delete();
-        	$msg = 'Message deleted.';
+          $message->delete();
+          $msg = 'Message deleted.';
         }
         else{
-	        $msg = 'Message not found.';
+          $msg = 'Message not found.';
         }
         $status = 200;
         return response()->json(compact('msg','status'));
    }
    public function getSingleUserMessage(Request $request){
-   		$user = JWTAuth::parseToken()->authenticate();
+      $user = JWTAuth::parseToken()->authenticate();
         $user_id = $user->user_id;
         $validator = Validator::make($request->all(), [
-        	'message_id' => 'required',
+          'message_id' => 'required',
         ]);
         $message_details = [];
         if($validator->fails()){
@@ -222,16 +231,16 @@ class MassageController extends Controller
         }
         $message_id = $request->message_id;
         $message = Messages::where(['id'=>$message_id])->where(function ($query) use ($user_id){
-					    $query->where('sender_id', '=', $user_id)
-					          ->orWhere('receiver_id', '=', $user_id);
-					})->first();
+              $query->where('sender_id', '=', $user_id)
+                    ->orWhere('receiver_id', '=', $user_id);
+          })->first();
         if(!empty($message)){
-        	$message_details['title'] = $message->title;
-        	$message_details['message'] = $message->message;
-        	$msg = 'Message Found.';
+          $message_details['title'] = $message->title;
+          $message_details['message'] = $message->message;
+          $msg = 'Message Found.';
         }
         else{
-	        $msg = 'Message not found.';
+          $msg = 'Message not found.';
         }
         $status = 200;
         return response()->json(compact('message_details','msg','status'));
@@ -250,11 +259,11 @@ class MassageController extends Controller
       $message_details = [];
       $message = Messages::where(['id'=>$message_id,'receiver_id'=>$user_id])->first();
       if(!empty($message))
-      {
-        $message_details = $message;
-        $message->is_read = 1;
-        $message->save();
-        $msg = "Message has been read.";
+      { 
+          $message_details = $message;
+          $message->is_read = 1;
+          $message->save();
+          $msg = "Message has been read.";        
       } 
       else{
         $msg = "Requested message not found.";
@@ -264,29 +273,29 @@ class MassageController extends Controller
    }
    public function add_notification_data(Request $request)
    {
-   		try
-    	{
-    		$data = DB::table('push_notifications')->where("udid",$request->get("udid"))->get();
-	    	if(!count($data))
-	    	{
-	    		$insert = Push_notification::insert($request->all());
-	    		return response()->json([
-	                   'status' => 'success',
-	                   'data' => "Insert successful!!"
-	               ],201);
-	    	}
-	    	else
-	    	{
-	    		$update = Push_notification::find($data[0]->id);
-	    		$update->push_id = $request->get("push_id");
-	    		$update->save();
-	    		return response()->json([
-	                   'status' => 'fail',
-	                   'data' => "Alredy Addded"
-	               ],201);
-	    	}
-	    }
-	    catch(\Exception $e)
+      try
+      {
+        $data = DB::table('push_notifications')->where("udid",$request->get("udid"))->get();
+        if(!count($data))
+        {
+          $insert = Push_notification::insert($request->all());
+          return response()->json([
+                     'status' => 'success',
+                     'data' => "Insert successful!!"
+                 ],201);
+        }
+        else
+        {
+          $update = Push_notification::find($data[0]->id);
+          $update->push_id = $request->get("push_id");
+          $update->save();
+          return response()->json([
+                     'status' => 'fail',
+                     'data' => "Alredy Addded"
+                 ],201);
+        }
+      }
+      catch(\Exception $e)
         {
             return response()->json([
                     'status' => 'fail',
@@ -296,38 +305,38 @@ class MassageController extends Controller
    }
    public function edit_notification_data(Request $request)
    {
-   		$user = JWTAuth::parseToken()->authenticate();
-   		try
-    	{
-	    	$data = Push_notification::where("udid",$request->get("udid"))->get();
-	    	if(count($data))
-	    	{
-	    		$update = Push_notification::find($data[0]->id);
-	    		$update->user_id =$user->user_id;
-	    		if($update->save())
-	    		{
-	    			return response()->json([
-	                    'status' => 'success',
-	                    'data' => "Update successful!!"
-	                ],201);
-	    		}
-	    		else
-	    		{
-	    			return response()->json([
-	                    'status' => 'fail',
-	                    'data' => "Not update"
-	                ],201);	
-	    		}
-	    	}
-	    	else
-	    	{
-	    		return response()->json([
-	                    'status' => 'fail',
-	                    'data' => "No data found"
-	                ],201);	
-	    	}
-	    }
-	    catch(\Exception $e)
+      $user = JWTAuth::parseToken()->authenticate();
+      try
+      {
+        $data = Push_notification::where("udid",$request->get("udid"))->get();
+        if(count($data))
+        {
+          $update = Push_notification::find($data[0]->id);
+          $update->user_id =$user->user_id;
+          if($update->save())
+          {
+            return response()->json([
+                      'status' => 'success',
+                      'data' => "Update successful!!"
+                  ],201);
+          }
+          else
+          {
+            return response()->json([
+                      'status' => 'fail',
+                      'data' => "Not update"
+                  ],201); 
+          }
+        }
+        else
+        {
+          return response()->json([
+                      'status' => 'fail',
+                      'data' => "No data found"
+                  ],201); 
+        }
+      }
+      catch(\Exception $e)
         {
             return response()->json([
                     'status' => 'fail',
@@ -342,12 +351,77 @@ class MassageController extends Controller
         $data = Push_notification::where("udid",$request->get("udid"))->get();
         if(count($data))
         {
-            Push_notification::destroy($data[0]->id);
+            $user_data = Push_notification::find($data[0]->id);
+            $user_data->user_id = null;
+            $user_data->save();
             return response()->json([
-                    'status' => 'success',
+                    'status' => 200,
                     'message' => 'Delete success'
                 ],201);
         }
+      }
+      catch(\Exception $e)
+        {
+            return response()->json([
+                    'status' => 'fail',
+                    'message' => $e->getMessage()
+                ],201);
+        }
+   }
+   public function update_badge_data(Request $request)
+   {
+
+      $user = JWTAuth::parseToken()->authenticate();
+      try
+      {
+        $data = Messages::where("receiver_id",$user->user_id)->where("is_read","0")->count();
+        /*return response()->json($data);
+        die;*/
+          $url = "https://fcm.googleapis.com/fcm/send";
+            $serverKey = "AAAAljSRhps:APA91bFYcSmOKbiQb8y7exkfjdxanHqNneyFWwQylkz0yg3CPwvEeOmfT1ObragkA2_aCcgrCftWKSYUzofeah3CkIzVEi2jbPwm8324D61OrxA_HlS1VIwQGWPZGdSyne2PNOOXTgO9";
+            $push_data = Push_notification::where("user_id",$user->user_id)->get();
+
+              if(count($push_data))
+              {
+                foreach ($push_data as $key => $value) 
+                {
+                  $user_badge = DB::table('messages')->where("receiver_id",$value->user_id)->where('is_read','0')->count();
+                  $token[] = $value->push_id;
+                  $title = $request->get('title');
+                $body = $request->get('message');
+                $notification = array('badge' =>$user_badge);
+                $data = array('badge' => $user_badge);
+                $arrayToSend = array('registration_ids' => $token, 'notification' => $notification,'data' => $data);
+                $json = json_encode($arrayToSend);$headers = array();
+                $headers[] = 'Content-Type: application/json';
+                $headers[] = 'Authorization: key='. $serverKey;
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, $url);
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST,"POST");
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
+                curl_setopt($ch, CURLOPT_HTTPHEADER,$headers);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+                $response = curl_exec($ch);
+                if ($response === FALSE) 
+                {
+                  die('FCM Send Error: ' . curl_error($ch));
+                }
+                
+            }
+            return response()->json([
+                       'status' => 200,
+                       'message' => "Changed"
+                   ],201);
+            die;
+
+          }
+          else
+          {
+            return response()->json([
+                        'status' => 'fail',
+                        'data' => "No data found"
+                    ],201); 
+          }
       }
       catch(\Exception $e)
         {
