@@ -9,6 +9,8 @@
     use JWTAuth;
     use Tymon\JWTAuth\Exceptions\JWTException;
      use Mail;
+     use DateTime;
+     use Carbon\Carbon;
     class UserController extends Controller
     {
         public function authenticate(Request $request)
@@ -23,7 +25,14 @@
                 return response()->json(['error' => 'could_not_create_token','status' => 500], 500);
             }
             $where = array('email' => $request->email);
+            
+            
             $user = user::where($where)->get();
+            $user1 = user::find($where)->first();
+            $now = Carbon::now();
+            
+            $user1->is_prev_logged_id = $now->format('Y-m-d H:i:s');
+            $user1->save();
             $status = 200;
             return response()->json(compact('user','token','status'));
         }

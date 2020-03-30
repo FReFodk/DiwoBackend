@@ -22,7 +22,7 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique();
             $table->string('password');
             $table->decimal('hours_hired',5,2);
-            $table->boolean('is_prev_logged_id')->default(0);
+            $table->string('is_prev_logged_id');
         });
     }
 

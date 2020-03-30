@@ -146,7 +146,7 @@ class MassageController extends Controller
         if(is_array($receivers) && !empty($receivers)) 
         {
           $url = "https://fcm.googleapis.com/fcm/send";
-          $serverKey = "AAAAljSRhps:APA91bFYcSmOKbiQb8y7exkfjdxanHqNneyFWwQylkz0yg3CPwvEeOmfT1ObragkA2_aCcgrCftWKSYUzofeah3CkIzVEi2jbPwm8324D61OrxA_HlS1VIwQGWPZGdSyne2PNOOXTgO9";
+          $serverKey = "AAAABD8iU50:APA91bGrx1Xe66WiNnWL0sYpmk_6ZK3TYaFsg2Vw5sT66Jz_ksjPTdkxe24XJhAhnRDqWV7_QKOo1ugkALfGpRgTzKwSQPuMQjPmxdlSxmZRTirG6kFoUYGBY_pOedfLzC9fudimC0dt";
           
             if(count($receivers))
             {
@@ -378,7 +378,7 @@ class MassageController extends Controller
         /*return response()->json($data);
         die;*/
           $url = "https://fcm.googleapis.com/fcm/send";
-            $serverKey = "AAAAljSRhps:APA91bFYcSmOKbiQb8y7exkfjdxanHqNneyFWwQylkz0yg3CPwvEeOmfT1ObragkA2_aCcgrCftWKSYUzofeah3CkIzVEi2jbPwm8324D61OrxA_HlS1VIwQGWPZGdSyne2PNOOXTgO9";
+            $serverKey = "AAAABD8iU50:APA91bGrx1Xe66WiNnWL0sYpmk_6ZK3TYaFsg2Vw5sT66Jz_ksjPTdkxe24XJhAhnRDqWV7_QKOo1ugkALfGpRgTzKwSQPuMQjPmxdlSxmZRTirG6kFoUYGBY_pOedfLzC9fudimC0dt";
             $push_data = Push_notification::where("user_id",$user->user_id)->get();
 
               if(count($push_data))
