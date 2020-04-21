@@ -7,7 +7,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use JWTAuth;
+use Carbon\Carbon;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use App\User;
 
 class SocialKapitalController extends Controller
 {
@@ -44,6 +46,11 @@ class SocialKapitalController extends Controller
 
         $user = JWTAuth::parseToken()->authenticate();
         $where = ['user_id' => $user->user_id];
+        $where1 = array('user_id' => $user->user_id);
+        $user1 = user::where($where1)->first();
+        $now = Carbon::now();
+        $user1['last_added_social_kapital'] = $now;
+        $user1->save();
         $kapital_data = SocialKapital::where($where)->get();
         $status = 200;
 

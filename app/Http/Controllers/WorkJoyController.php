@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use App\User;
+use Carbon\Carbon;
 
 
 class WorkJoyController extends Controller
@@ -36,6 +38,12 @@ class WorkJoyController extends Controller
         $work_data = WorkJoy::where($where)->get();*/
         $last_inserted_id = $insertedId; 
         $status = 200;
+        $user_id = $request->get('user_id');
+        $where = array('user_id' => $user_id);
+        $user1 = user::where($where)->first();
+        $now = Carbon::now();
+        $user1['last_added_workjoy'] = $now;
+        $user1->save();
 
         return response()->json(compact('last_inserted_id','status'));
     }
